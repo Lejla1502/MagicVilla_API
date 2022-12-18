@@ -6,7 +6,7 @@ namespace MagicVilla_VillaAPI.Models.Dto
     {
         public int Id { get; set; }
         [Required]
-        [MaxLength(5)]
+        [MaxLength(50)]
         public string Name { get; set; }
         [Required]
         public double Rate { get; set; }

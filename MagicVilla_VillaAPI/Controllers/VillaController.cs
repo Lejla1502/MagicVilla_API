@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
@@ -104,7 +105,7 @@ namespace MagicVilla_VillaAPI.Controllers
             _dbContext.Villas.Add(model);
             _dbContext.SaveChanges();
 
-            return CreatedAtRoute("GetVilla", new {id=villa.Id}, villa);
+            return CreatedAtRoute("GetVilla", new {id=model.Id}, model);
         }
 
         [HttpDelete("{id}")]
@@ -177,7 +178,7 @@ namespace MagicVilla_VillaAPI.Controllers
                 return BadRequest();
 
             //here we need to retreive villa, because in patch document we dont get the whole object
-            var villa = _dbContext.Villas.FirstOrDefault(x => x.Id == id);
+            var villa = _dbContext.Villas.AsNoTracking().FirstOrDefault(x => x.Id == id);
 
             if(villa == null)
                 return NotFound();
