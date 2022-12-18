@@ -1,5 +1,7 @@
+using MagicVilla_VillaAPI.Data;
 using MagicVilla_VillaAPI.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,10 @@ builder.Host.UseSerilog();
 
 //the above code will create folder "log" with "villaLogs" file where logs will be stored
 */
+builder.Services.AddDbContext<VillaDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSqlConnection"));
+});
 
 builder.Services.AddControllers(option =>
 {
@@ -33,7 +39,7 @@ builder.Services.AddControllers(option =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<ILogging, Logging>();
+//builder.Services.AddSingleton<ILogging, Logging>();
 
 var app = builder.Build();
 

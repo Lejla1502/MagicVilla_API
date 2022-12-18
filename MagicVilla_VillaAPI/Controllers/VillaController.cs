@@ -1,4 +1,4 @@
-﻿using MagicVilla_VillaAPI.DataStore;
+﻿using MagicVilla_VillaAPI.Data;
 using MagicVilla_VillaAPI.Logging;
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
@@ -19,12 +19,12 @@ namespace MagicVilla_VillaAPI.Controllers
     public class VillaController : ControllerBase
     {
         private readonly ILogger<VillaController> _logger;
-        private readonly ILogging _customILogger;
+        //private readonly ILogging _customILogger;
 
-        public VillaController(ILogger<VillaController> logger, ILogging customLogger)
+        public VillaController(ILogger<VillaController> logger)
         {
             this._logger = logger;
-            _customILogger = customLogger;
+           // _customILogger = customLogger;
         }
         //- it will not work without HttpGet
         [HttpGet]
@@ -32,7 +32,7 @@ namespace MagicVilla_VillaAPI.Controllers
         public ActionResult<IEnumerable<VillaDto>> GetVillas()
         {
             _logger.LogInformation("Getting all villas");
-            _customILogger.Log("Getting all villas", "");
+            //_customILogger.Log("Getting all villas", "");
             return Ok(VillaStore.listVillas);
         }
 
@@ -52,7 +52,7 @@ namespace MagicVilla_VillaAPI.Controllers
             if (id == 0)
             { 
                 _logger.LogInformation("Get villa error with id"+id);
-                _customILogger.Log("Get villa error with id "+id, "error");
+               // _customILogger.Log("Get villa error with id "+id, "error");
 
                 return BadRequest(); 
             }
