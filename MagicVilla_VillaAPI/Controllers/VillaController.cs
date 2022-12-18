@@ -19,11 +19,13 @@ namespace MagicVilla_VillaAPI.Controllers
     public class VillaController : ControllerBase
     {
         private readonly ILogger<VillaController> _logger;
+        private readonly VillaDbContext _dbContext;
         //private readonly ILogging _customILogger;
 
-        public VillaController(ILogger<VillaController> logger)
+        public VillaController(ILogger<VillaController> logger, VillaDbContext dbContext)
         {
             this._logger = logger;
+            _dbContext = dbContext;
            // _customILogger = customLogger;
         }
         //- it will not work without HttpGet
@@ -33,7 +35,7 @@ namespace MagicVilla_VillaAPI.Controllers
         {
             _logger.LogInformation("Getting all villas");
             //_customILogger.Log("Getting all villas", "");
-            return Ok(VillaStore.listVillas);
+            return Ok(_dbContext.Villas.ToList());
         }
 
         //explicitely saying that id is integer, but we can omit that and just leave id
@@ -57,7 +59,7 @@ namespace MagicVilla_VillaAPI.Controllers
                 return BadRequest(); 
             }
 
-            var villa = VillaStore.listVillas.FirstOrDefault(x => x.Id == id);
+            var villa = _dbContext.Villas.FirstOrDefault(x => x.Id == id);
 
             if(villa == null)   
                 return NotFound();
@@ -71,7 +73,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<VillaDto> CreateVilla(VillaDto villa)
         {
-            if (VillaStore.listVillas.FirstOrDefault(x => x.Name.ToLower() == villa.Name.ToLower()) != null)
+            if (_dbContext.Villas.FirstOrDefault(x => x.Name.ToLower() == villa.Name.ToLower()) != null)
             {
                 ModelState.AddModelError("CustomError", "Villa already exists");
                 return BadRequest(ModelState);
@@ -87,9 +89,20 @@ namespace MagicVilla_VillaAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError); //because it doesnt exist 
             //among default error messages
 
-            villa.Id= VillaStore.listVillas.OrderByDescending(x => x.Id).FirstOrDefault().Id+1;
+            Villa model = new Villa
+            {
+                Name=villa.Name,
+                DateCreated = DateTime.Now,
+                Amenity = villa.Amenity,
+                Details = villa.Details,
+                ImageUrl = villa.ImageUrl,
+                Occupancy = villa.Occupancy,
+                Rate = villa.Rate,
+                Sqft = villa.Sqft
+            };
 
-            VillaStore.listVillas.Add(villa);
+            _dbContext.Villas.Add(model);
+            _dbContext.SaveChanges();
 
             return CreatedAtRoute("GetVilla", new {id=villa.Id}, villa);
         }
@@ -104,12 +117,13 @@ namespace MagicVilla_VillaAPI.Controllers
             if(id==0)
                 return BadRequest();
 
-            var villa= VillaStore.listVillas.FirstOrDefault(x=>x.Id==id);
+            var villa= _dbContext.Villas.FirstOrDefault(x=>x.Id==id);
 
             if(villa == null)
                 return NotFound();
 
-            VillaStore.listVillas.Remove(villa);
+            _dbContext.Villas.Remove(villa);
+            _dbContext.SaveChanges();
 
             //usually used for delete; status coe 204
             return NoContent();
@@ -124,11 +138,30 @@ namespace MagicVilla_VillaAPI.Controllers
             if(villa == null || id!=villa.Id)
                 return BadRequest();
 
-            var v = VillaStore.listVillas.FirstOrDefault(x=>x.Id == id);
+            //var v = _dbContext.Villas.FirstOrDefault(x=>x.Id == id);
 
-            v.Name = villa.Name;
-            v.Occupancy = villa.Occupancy;
-            v.Sqft = villa.Sqft;
+            //v.Name = villa.Name;
+            //v.Occupancy = villa.Occupancy;
+            //v.Sqft = villa.Sqft;
+
+            //with ef core we don't need to retreive record in order to upda it
+            //based on id, it can figure on its own which record needs to be updated
+
+            Villa model = new Villa
+            {
+                Id = villa.Id,
+                Name = villa.Name,
+                DateCreated = DateTime.Now,
+                Amenity = villa.Amenity,
+                Details = villa.Details,
+                ImageUrl = villa.ImageUrl,
+                Occupancy = villa.Occupancy,
+                Rate = villa.Rate,
+                Sqft = villa.Sqft
+            };
+
+            _dbContext.Villas.Update(model);
+            _dbContext.SaveChanges();
 
             return NoContent();
         }
@@ -143,14 +176,43 @@ namespace MagicVilla_VillaAPI.Controllers
             if (patchDto == null || id ==0)
                 return BadRequest();
 
-            var v = VillaStore.listVillas.FirstOrDefault(x => x.Id == id);
+            //here we need to retreive villa, because in patch document we dont get the whole object
+            var villa = _dbContext.Villas.FirstOrDefault(x => x.Id == id);
 
-            if(v == null)
+            if(villa == null)
                 return NotFound();
 
-            patchDto.ApplyTo(v, ModelState);
+            VillaDto villaDto = new ()
+            {
+                Id = villa.Id,
+                Name = villa.Name,
+                Amenity = villa.Amenity,
+                Details = villa.Details,
+                ImageUrl = villa.ImageUrl,
+                Occupancy = villa.Occupancy,
+                Rate = villa.Rate,
+                Sqft = villa.Sqft
+            };
 
-            if(!ModelState.IsValid) 
+
+            patchDto.ApplyTo(villaDto, ModelState);
+
+            Villa model = new Villa()
+            {
+                Id = villaDto.Id,
+                Name = villaDto.Name,
+                Amenity = villaDto.Amenity,
+                Details = villaDto.Details,
+                ImageUrl = villaDto.ImageUrl,
+                Occupancy = villaDto.Occupancy,
+                Rate = villaDto.Rate,
+                Sqft = villaDto.Sqft
+            };
+
+            _dbContext.Update(model);
+            _dbContext.SaveChanges();
+
+            if (!ModelState.IsValid) 
                 return BadRequest();
 
             return NoContent();
