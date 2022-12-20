@@ -71,8 +71,8 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<VillaDto> CreateVilla(VillaDto villa)
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<VillaCreateDto> CreateVilla(VillaCreateDto villa)
         {
             if (_dbContext.Villas.FirstOrDefault(x => x.Name.ToLower() == villa.Name.ToLower()) != null)
             {
@@ -86,9 +86,7 @@ namespace MagicVilla_VillaAPI.Controllers
             if(villa==null) 
                 return BadRequest();
 
-            if (villa.Id > 0)
-                return StatusCode(StatusCodes.Status500InternalServerError); //because it doesnt exist 
-            //among default error messages
+            
 
             Villa model = new Villa
             {
@@ -133,7 +131,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdateVilla(int id,[FromBody] VillaDto villa)
+        public IActionResult UpdateVilla(int id,[FromBody] VillaUpdateDto villa)
         {
             
             if(villa == null || id!=villa.Id)
@@ -171,7 +169,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType (StatusCodes.Status404NotFound)]
-        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaDto> patchDto)
+        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaUpdateDto> patchDto)
         {
 
             if (patchDto == null || id ==0)
@@ -183,7 +181,7 @@ namespace MagicVilla_VillaAPI.Controllers
             if(villa == null)
                 return NotFound();
 
-            VillaDto villaDto = new ()
+            VillaUpdateDto villaDto = new ()
             {
                 Id = villa.Id,
                 Name = villa.Name,
