@@ -42,16 +42,26 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetVillas()
         {
-            
-            IEnumerable<Villa> villaList = await _villaDB.GetAllAsync();
 
-            _logger.LogInformation("Getting all villas");
-            //_customILogger.Log("Getting all villas", "");
+            try
+            {
+                IEnumerable<Villa> villaList = await _villaDB.GetAllAsync();
 
-            //automatically mapping 
-            _response.Result = _mapper.Map<List<VillaDto>>(villaList);
-            _response.StatusCode = HttpStatusCode.OK;
-            return Ok(_response);
+                _logger.LogInformation("Getting all villas");
+                //_customILogger.Log("Getting all villas", "");
+
+                //automatically mapping 
+                _response.Result = _mapper.Map<List<VillaDto>>(villaList);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+            }
+            catch (Exception e)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { e.ToString() };
+            }
+
+            return _response;
         }
 
         //explicitely saying that id is integer, but we can omit that and just leave id
@@ -77,7 +87,7 @@ namespace MagicVilla_VillaAPI.Controllers
                     return NotFound(_response);
                 }
 
-                _response.Result = _mapper.Map<Villa>(villa);
+                _response.Result = _mapper.Map<VillaDto>(villa);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
@@ -117,7 +127,7 @@ namespace MagicVilla_VillaAPI.Controllers
 
                 await _villaDB.CreateAsync(villa);
 
-                _response.Result = _mapper.Map<Villa>(villa);
+                _response.Result = _mapper.Map<VillaDto>(villa);
                 _response.StatusCode = HttpStatusCode.Created;
 
                 return CreatedAtRoute("GetVilla", new {id=villa.Id}, _response);
@@ -157,8 +167,6 @@ namespace MagicVilla_VillaAPI.Controllers
 
 
                 //usually used for delete; status coe 204
-
-                _response.Result = _mapper.Map<Villa>(villa);
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;
                 return Ok(_response);
@@ -205,7 +213,6 @@ namespace MagicVilla_VillaAPI.Controllers
                 await _villaDB.UpdateAsync(villa);
 
 
-                _response.Result = _mapper.Map<Villa>(villa);
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;
                 return Ok(_response);

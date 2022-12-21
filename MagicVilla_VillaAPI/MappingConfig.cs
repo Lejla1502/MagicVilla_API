@@ -11,10 +11,14 @@ namespace MagicVilla_VillaAPI
             //ReverseMap means mapping goes both ways
             //Villa to VillaDto and VillaDto to Villa
             CreateMap<Villa, VillaDto>().ReverseMap();
-
             CreateMap<Villa, VillaCreateDto>().ReverseMap(); 
-
             CreateMap<Villa, VillaUpdateDto>().ReverseMap();
+
+            //Villa Number
+            CreateMap<VillaNumber, VillaNumberDto>().ReverseMap();
+            CreateMap<VillaNumber, VillaNumberCreateDto>().ReverseMap();
+            CreateMap<VillaNumber, VillaNumberUpdateDto>().ReverseMap();
+
         }
     }
 }
