@@ -15,7 +15,7 @@ namespace MagicVilla_VillaAPI.Repository
         public async Task<VillaNumber> UpdateVillaNumAsync(VillaNumber entity)
         {
             entity.UpdatedDate = DateTime.UtcNow;
-            _dbContext.Update(entity);
+            _dbContext.VillaNumbers.Update(entity);
             await _dbContext.SaveChangesAsync();
 
             return entity;
