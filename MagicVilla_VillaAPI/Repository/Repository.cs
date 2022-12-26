@@ -2,6 +2,7 @@
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 
 namespace MagicVilla_VillaAPI.Repository
@@ -17,7 +18,7 @@ namespace MagicVilla_VillaAPI.Repository
             this.dbSet = _dbContext.Set<T>();   
         }
 
-        public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includeProperties = null)
         {
             //when we work with IQueryable, it doesn't get executed right away, so we can additionally 
             //build on this query
@@ -29,6 +30,13 @@ namespace MagicVilla_VillaAPI.Repository
             if (filter != null)
                 query = query.Where(filter);
 
+            if(!includeProperties.IsNullOrEmpty())
+            {
+                foreach( var prop in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(prop);
+                }
+            }
 
             ///at this point the query will be executed 
             //it is DEFERRED EXECUTION
@@ -36,7 +44,7 @@ namespace MagicVilla_VillaAPI.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
         {
             //when we work with IQueryable, it doesn't get executed right away, so we can additionally 
             //build on this query
@@ -45,6 +53,13 @@ namespace MagicVilla_VillaAPI.Repository
             if (filter != null)
                 query = query.Where(filter);
 
+            if (!includeProperties.IsNullOrEmpty())
+            {
+                foreach (var prop in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(prop);
+                }
+            }
 
             ///at this point the query will be executed 
             //it is DEFERRED EXECUTION

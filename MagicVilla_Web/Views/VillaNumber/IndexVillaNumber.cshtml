@@ -1,7 +1,52 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model IEnumerable<MagicVilla_Web.Models.Dto.VillaNumberDto>
 
-<h1>INDEX VILLA NUMBER</h1>
+<div class="container p-4 border">
+    <div class="row pb-2">
+        <div class="col">
+            <h1 class="text-primary">Villa Numbers list</h1>
+        </div>
+        <div class="col text-end pt-1">
+            <a class="btn btn-outline-primary" asp-action="CreateVillaNumber"><i class="bi bi-plus-square-fill"></i>Create new villa number</a>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Villa
+                </th>
+                <th>
+                    Villa Num
+                </th>
+                <th>
+                    Special details
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Model)
+            {
+                <tr>
+                    <td>
+                        @x.Villa.Name
+                    </td>
+                    <td>
+                        @x.VillaNo
+                    </td>
+                    <td>
+                        @x.SpecialDetails
+                    </td>
+                    <td>
+                        <a class="btn btn-success" asp-action="UpdateVillaNumber" asp-route-id="@x.VillaNo"><i class="bi bi-pencil-square"></i></a>
+                        <a class="btn btn-danger" asp-action="DeleteVillaNumber" asp-route-id="@x.VillaNo"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
