@@ -94,7 +94,6 @@ namespace MagicVilla_Web.Controllers
             }
             return View(dto);
         }
-
        
         public async Task<IActionResult> DeleteVilla(int id)
         {
@@ -105,6 +104,8 @@ namespace MagicVilla_Web.Controllers
                 {
                     return RedirectToAction("IndexVilla");
                 }
+
+                
          
             return NotFound();
         }

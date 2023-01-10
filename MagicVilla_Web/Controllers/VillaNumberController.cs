@@ -70,5 +70,40 @@ namespace MagicVilla_Web.Controllers
 
             return View(dto);
         }
+
+        public async Task<IActionResult> UpdateVillaNumber(int id)
+        {
+            List<VillaDto> villaList = new();
+
+            var resp = await _villaService.GetAsync<APIResponse>(id);
+            villaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result));
+
+            var villaSelectist = villaList.Select(s => new { s.Id, Name = s.Name }).ToList();
+
+            VillaNumberCreateDto dto = new VillaNumberCreateDto
+            {
+                VillaList = new SelectList(villaSelectist, "Id", "Name")
+            };
+
+            return View(dto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateVillaNumber(VillaNumberUpdateDto dto)
+        {
+            if (ModelState.IsValid)
+            {
+                var resp = await _villaNumberService.UpdateAsync<APIResponse>(dto);
+
+                if (resp != null && resp.IsSuccess)
+                {
+                    return RedirectToAction("IndexVillaNumber");
+                }
+            }
+
+
+            return View(dto);
+        }
     }
 }
