@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net;
 
 namespace MagicVilla_Web.Controllers
 {
@@ -71,21 +72,47 @@ namespace MagicVilla_Web.Controllers
             return View(dto);
         }
 
+
+       // [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVillaNumber(int id)
         {
-            List<VillaDto> villaList = new();
+            
 
-            var resp = await _villaService.GetAsync<APIResponse>(id);
-            villaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result));
+            var getVillaNumber = await _villaNumberService.GetAsync<APIResponse>(id);
 
-            var villaSelectist = villaList.Select(s => new { s.Id, Name = s.Name }).ToList();
 
-            VillaNumberCreateDto dto = new VillaNumberCreateDto
+            if (getVillaNumber != null && getVillaNumber.IsSuccess)
             {
-                VillaList = new SelectList(villaSelectist, "Id", "Name")
-            };
+                VillaNumberDto villaNumDto = JsonConvert.DeserializeObject<VillaNumberDto>(Convert.ToString(getVillaNumber.Result));
 
-            return View(dto);
+                List<VillaDto> villaList = new();
+
+                var resp = await _villaService.GetAllAsync<APIResponse>();
+                villaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result));
+
+                var villaSelectist = villaList.Select(s => new { s.Id, Name = s.Name }).ToList();
+
+                VillaNumberUpdateDto villaNumberUpdateDto = new VillaNumberUpdateDto();
+                villaNumberUpdateDto = _mapper.Map<VillaNumberUpdateDto>(villaNumDto);
+
+                villaNumberUpdateDto.VillaList = new SelectList(villaSelectist, "Id", "Name");
+
+                return View(villaNumberUpdateDto);
+            }
+
+            return NotFound();
+
+            //_response.Result = _mapper.Map<VillaDto>(villa);
+
+            //var villaNum = _mapper.Map<VillaNumberDto>(getVillaNumber.Result);
+
+            //VillaNumberUpdateDto dto = new VillaNumberUpdateDto
+            //{
+            //    VillaList = new SelectList(villaSelectist, "Id", "Name"),
+            //    VillaNo = villaNum.VillaNo
+            //};
+
+            //return View(dto);
         }
 
         [HttpPost]
