@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Models.Dto;
+using MagicVilla_Web.Models.VM;
 using MagicVilla_Web.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -38,29 +39,33 @@ namespace MagicVilla_Web.Controllers
 
         public async Task<IActionResult> CreateVillaNumber()
         {
-            List<VillaDto> villaList = new();
+          
+            VillaNumberCreateVM villaNumberCreateVM = new VillaNumberCreateVM();
 
             var resp = await _villaService.GetAllAsync<APIResponse>();
-            villaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result));
 
-            var villaSelectist = villaList.Select(s => new { s.Id, Name = s.Name }).ToList();
-
-            VillaNumberCreateDto dto = new VillaNumberCreateDto
+            if(resp !=null || resp.IsSuccess)
             {
+                villaNumberCreateVM.VillaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result))
+                    .Select(x=> new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name,
+                    });
+            }
 
-                VillaList = new SelectList(villaSelectist, "Id", "Name")
-            };
+            //var villaSelectist = villaList.Select(s => new { s.Id, Name = s.Name }).ToList();
 
-            return View(dto);
+            return View(villaNumberCreateVM);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateVillaNumber(VillaNumberCreateDto dto)
+        public async Task<IActionResult> CreateVillaNumber(VillaNumberCreateVM villaNumberCreateVM)
         {
             if(ModelState.IsValid)
             {
-                var resp = await _villaNumberService.CreateAsync<APIResponse>(dto);
+                var resp = await _villaNumberService.CreateAsync<APIResponse>(villaNumberCreateVM.VillaNumber);
 
                 if (resp != null && resp.IsSuccess)
                 {
@@ -69,7 +74,7 @@ namespace MagicVilla_Web.Controllers
             }
             
 
-            return View(dto);
+            return View(villaNumberCreateVM);
         }
 
 

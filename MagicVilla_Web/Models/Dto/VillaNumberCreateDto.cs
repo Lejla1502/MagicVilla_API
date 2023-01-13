@@ -9,7 +9,7 @@ namespace MagicVilla_Web.Models.Dto
         public int VillaNo { get; set; }
         [Required]
         public int VillaID { get; set; }
-        public SelectList VillaList { get; set; }
+        //public SelectList VillaList { get; set; }
         public string SpecialDetails { get; set; }
         public DateTime CreatedDate { get; set; }
     }
