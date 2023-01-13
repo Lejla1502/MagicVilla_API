@@ -132,5 +132,20 @@ namespace MagicVilla_Web.Controllers
 
             return View(dto);
         }
+
+        public async Task<IActionResult> DeleteVillaNumber(int id)
+        {
+            var response = await _villaNumberService.DeleteAsync<APIResponse>(id);
+
+
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction("IndexVillaNumber");
+            }
+
+
+
+            return NotFound();
+        }
     }
 }
