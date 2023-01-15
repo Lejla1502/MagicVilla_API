@@ -71,6 +71,13 @@ namespace MagicVilla_Web.Controllers
                 {
                     return RedirectToAction("IndexVillaNumber");
                 }
+                else
+                {
+                    if(resp.ErrorMessages.Count>0)
+                    {
+                        ModelState.AddModelError("CustomError", resp.ErrorMessages.FirstOrDefault());
+                    }
+                }
             }
 
             //when MoelState not valid, repopulate villa list
