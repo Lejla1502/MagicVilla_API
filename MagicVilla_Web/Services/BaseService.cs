@@ -58,10 +58,11 @@ namespace MagicVilla_Web.Services
                 //when we receive API response, we need to extract API content from there
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
 
-                //here we could've used generic object, but since our response will alway be API response,
-                //we've made APIResponse variable
+               
                 try
-                {
+                { 
+                    //here we could've used generic object, but since our response will alway be API response,
+                    //we've made APIResponse variable
                     APIResponse deserializedAPIResponse = JsonConvert.DeserializeObject<APIResponse>(apiContent);
 
                     if(apiResponse.StatusCode == HttpStatusCode.BadRequest
