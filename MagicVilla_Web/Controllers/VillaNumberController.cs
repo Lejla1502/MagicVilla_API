@@ -72,7 +72,19 @@ namespace MagicVilla_Web.Controllers
                     return RedirectToAction("IndexVillaNumber");
                 }
             }
-            
+
+            //when MoelState not valid, repopulate villa list
+            var allVillas = await _villaService.GetAllAsync<APIResponse>();
+
+            if (allVillas != null && allVillas.IsSuccess)
+            {
+                villaNumberCreateVM.VillaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(allVillas.Result))
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name,
+                    });
+            }
 
             return View(villaNumberCreateVM);
         }
