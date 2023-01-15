@@ -44,7 +44,7 @@ namespace MagicVilla_Web.Controllers
 
             var resp = await _villaService.GetAllAsync<APIResponse>();
 
-            if(resp !=null || resp.IsSuccess)
+            if(resp !=null && resp.IsSuccess)
             {
                 villaNumberCreateVM.VillaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result))
                     .Select(x=> new SelectListItem

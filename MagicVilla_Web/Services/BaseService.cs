@@ -1,7 +1,9 @@
 ﻿using MagicVilla_Utility;
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Services.IServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 
 namespace MagicVilla_Web.Services
@@ -56,9 +58,35 @@ namespace MagicVilla_Web.Services
                 //when we receive API response, we need to extract API content from there
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
 
-                var deserializedAPIResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                //here we could've used generic object, but since our response will alway be API response,
+                //we've made APIResponse variable
+                try
+                {
+                    APIResponse deserializedAPIResponse = JsonConvert.DeserializeObject<APIResponse>(apiContent);
 
-                return deserializedAPIResponse;
+                    if(apiResponse.StatusCode == HttpStatusCode.BadRequest
+                        || apiResponse.StatusCode == HttpStatusCode.NotFound) 
+                    {
+                        deserializedAPIResponse.StatusCode = HttpStatusCode.BadRequest;
+                        deserializedAPIResponse.IsSuccess = false;
+
+                        //reverting to generic
+                        var res = JsonConvert.SerializeObject(deserializedAPIResponse);
+                        var returnObj = JsonConvert.DeserializeObject<T>(res);
+                        return returnObj;
+                    }
+
+                }
+                catch(Exception e)
+                {
+                    //if we run into exception, we fallback to generic
+                    var exceptionResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                    return exceptionResponse;
+                }
+
+                var deserializedApiResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                return deserializedApiResponse;
+
             }
             catch (Exception e)
             {
