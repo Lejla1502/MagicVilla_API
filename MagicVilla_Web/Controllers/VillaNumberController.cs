@@ -100,28 +100,29 @@ namespace MagicVilla_Web.Controllers
        // [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVillaNumber(int id)
         {
-            
+            VillaNumberUpdateVM villaNumberUpdateVM = new VillaNumberUpdateVM();
+
+            var resp = await _villaService.GetAllAsync<APIResponse>();
+
+            if (resp != null && resp.IsSuccess)
+            {
+                villaNumberUpdateVM.VillaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result))
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name,
+                    });
+            }
 
             var getVillaNumber = await _villaNumberService.GetAsync<APIResponse>(id);
-
 
             if (getVillaNumber != null && getVillaNumber.IsSuccess)
             {
                 VillaNumberDto villaNumDto = JsonConvert.DeserializeObject<VillaNumberDto>(Convert.ToString(getVillaNumber.Result));
+                villaNumberUpdateVM.VillaNumber  = _mapper.Map<VillaNumberUpdateDto>(villaNumDto);
 
-                List<VillaDto> villaList = new();
+                return View(villaNumberUpdateVM);
 
-                var resp = await _villaService.GetAllAsync<APIResponse>();
-                villaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(resp.Result));
-
-                var villaSelectist = villaList.Select(s => new { s.Id, Name = s.Name }).ToList();
-
-                VillaNumberUpdateDto villaNumberUpdateDto = new VillaNumberUpdateDto();
-                villaNumberUpdateDto = _mapper.Map<VillaNumberUpdateDto>(villaNumDto);
-
-                villaNumberUpdateDto.VillaList = new SelectList(villaSelectist, "Id", "Name");
-
-                return View(villaNumberUpdateDto);
             }
 
             return NotFound();
@@ -141,20 +142,39 @@ namespace MagicVilla_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateVillaNumber(VillaNumberUpdateDto dto)
+        public async Task<IActionResult> UpdateVillaNumber(VillaNumberUpdateVM villaNumberUpdateVM)
         {
             if (ModelState.IsValid)
             {
-                var resp = await _villaNumberService.UpdateAsync<APIResponse>(dto);
+                var resp = await _villaNumberService.UpdateAsync<APIResponse>(villaNumberUpdateVM.VillaNumber);
 
                 if (resp != null && resp.IsSuccess)
                 {
                     return RedirectToAction("IndexVillaNumber");
                 }
+                else
+                {
+                    if(resp.ErrorMessages.Count > 0)
+                    {
+                        ModelState.AddModelError("ErrorMessages", resp.ErrorMessages.FirstOrDefault());
+                    }
+                }
+            }
+
+            var allVillas = await _villaService.GetAllAsync<APIResponse>();
+
+            if (allVillas != null && allVillas.IsSuccess)
+            {
+                villaNumberUpdateVM.VillaList = JsonConvert.DeserializeObject<List<VillaDto>>(Convert.ToString(allVillas.Result))
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name,
+                    });
             }
 
 
-            return View(dto);
+            return View(villaNumberUpdateVM);
         }
 
         public async Task<IActionResult> DeleteVillaNumber(int id)
@@ -164,7 +184,7 @@ namespace MagicVilla_Web.Controllers
 
             if (response != null && response.IsSuccess)
             {
-                return RedirectToAction("IndexVillaNumber");
+                return RedirectToAction(nameof(IndexVillaNumber));
             }
 
 
