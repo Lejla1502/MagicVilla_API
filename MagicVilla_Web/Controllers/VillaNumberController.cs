@@ -69,6 +69,8 @@ namespace MagicVilla_Web.Controllers
 
                 if (resp != null && resp.IsSuccess)
                 {
+                    TempData["success"] = "Villa Number created successfully!";
+
                     return RedirectToAction("IndexVillaNumber");
                 }
                 else
@@ -79,6 +81,9 @@ namespace MagicVilla_Web.Controllers
                     }
                 }
             }
+
+            TempData["error"] = "Error encountered!!";
+
 
             //when MoelState not valid, repopulate villa list
             var allVillas = await _villaService.GetAllAsync<APIResponse>();
@@ -150,6 +155,8 @@ namespace MagicVilla_Web.Controllers
 
                 if (resp != null && resp.IsSuccess)
                 {
+                    TempData["success"] = "Villa Number updated successfully!";
+
                     return RedirectToAction("IndexVillaNumber");
                 }
                 else
@@ -160,6 +167,9 @@ namespace MagicVilla_Web.Controllers
                     }
                 }
             }
+
+            TempData["error"] = "Error encountered!!";
+
 
             var allVillas = await _villaService.GetAllAsync<APIResponse>();
 
@@ -184,9 +194,12 @@ namespace MagicVilla_Web.Controllers
 
             if (response != null && response.IsSuccess)
             {
+                TempData["success"] = "Villa Number deleted successfully!";
+
                 return RedirectToAction(nameof(IndexVillaNumber));
             }
 
+            TempData["error"] = "Error encountered!!";
 
 
             return NotFound();

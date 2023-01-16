@@ -7,7 +7,8 @@ namespace MagicVilla_Web.Models.Dto
     {
         [Required]
         public int VillaNo { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Villa needs to be selected")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select villa")]
         public int VillaID { get; set; }
         public string SpecialDetails { get; set; }
         public VillaDto Villa { get; set; }
