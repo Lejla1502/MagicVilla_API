@@ -39,7 +39,11 @@ namespace MagicVilla_VillaAPI.Repository
 
             if(usr == null) 
             {
-                return null;
+                return new LoginResponseDto()
+                {
+                    Token = "", 
+                    User = null
+                }; ;
             }
 
             //generating JWT token
@@ -72,7 +76,7 @@ namespace MagicVilla_VillaAPI.Repository
 
             LoginResponseDto loginResponse = new LoginResponseDto()
             {
-                Token = tokenHandler.WriteToken(token), //generating token which we can use 
+                Token = tokenHandler.WriteToken(token), //generating token which we can use / serializing
                 User = usr
             };
 

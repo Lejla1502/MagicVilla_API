@@ -30,6 +30,8 @@ builder.Services.AddDbContext<VillaDbContext>(option =>
 
 builder.Services.AddScoped<IVillaRepository, VillaRepository>();
 builder.Services.AddScoped<IVillaNumRepository, VillaNumRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
