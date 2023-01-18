@@ -42,6 +42,8 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpGet]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+
         public async Task<ActionResult<APIResponse>> GetVillas()
         {
 
@@ -76,6 +78,7 @@ namespace MagicVilla_VillaAPI.Controllers
 
         //cleaner version
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<APIResponse>> GetVilla(int id)
@@ -147,6 +150,8 @@ namespace MagicVilla_VillaAPI.Controllers
         [Authorize (Roles = "custom")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType (StatusCodes.Status404NotFound)]
         //we use IActionResult because we don't want to define type nor return any data
         public async Task<ActionResult<APIResponse>> DeleteVilla(int id) 
