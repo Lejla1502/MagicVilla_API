@@ -25,7 +25,7 @@ namespace MagicVilla_VillaAPI.Repository
         {
             var usr = _db.LocalUsers.FirstOrDefault(u => u.UserName == username);
 
-            if(username == null)
+            if(usr == null)
             {
                 return true;
             }
