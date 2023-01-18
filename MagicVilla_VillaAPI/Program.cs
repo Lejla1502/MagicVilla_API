@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Serilog;
 using MagicVilla_VillaAPI.Repository.IRepository;
 using MagicVilla_VillaAPI.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,45 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+
+//configuring authentication for bearer
+var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
+
+//builder.Services.AddAuthentication(x =>
+//   {
+//       x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//       x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//    }
+//).AddJwtBearer(b =>
+//{
+//    b.RequireHttpsMetadata = false;
+//    b.SaveToken = true;
+//    b.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuerSigningKey = true,
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+//        ValidateIssuer = false,
+//        ValidateAudience = false
+//    };
+//});
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+     {
+         options.TokenValidationParameters =
+             new TokenValidationParameters
+             {
+                 ValidateAudience = false,
+                 ValidateIssuer = false,
+                 ValidateActor = false,
+                 ValidateLifetime = true,
+                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
+             };
+     });
+
+
 
 builder.Services.AddControllers(option =>
 {
@@ -64,6 +106,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
