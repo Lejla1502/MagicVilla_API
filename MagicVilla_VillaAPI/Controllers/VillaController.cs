@@ -4,6 +4,7 @@ using MagicVilla_VillaAPI.Logging;
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
 using MagicVilla_VillaAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
@@ -39,6 +40,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
         //- it will not work without HttpGet
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetVillas()
         {
@@ -66,6 +68,7 @@ namespace MagicVilla_VillaAPI.Controllers
 
         //explicitely saying that id is integer, but we can omit that and just leave id
         [HttpGet("{id:int}", Name="GetVilla")]
+        [Authorize(Roles = "admin")]
         //to document all of the possible resonse types/codes
         ///[ProducesResponseType(typeof(int), 200)] //-OK
         //[ProducesResponseType(typeof(int), 404)] //-NOTFOUND
@@ -141,6 +144,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize (Roles = "custom")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType (StatusCodes.Status404NotFound)]
