@@ -8,11 +8,13 @@ namespace MagicVilla_Web.Services
 {
     public class VillaNumberService : BaseService, IVillaNumberService
     {
+        private readonly IHttpClientFactory _clientFactory;
         private string villaUrl;
-        public VillaNumberService(IHttpClientFactory httpClient, IConfiguration config) : base(httpClient)
+        public VillaNumberService(IHttpClientFactory clientFactory, IConfiguration config) : base(clientFactory)
         {
             //extracting api url from appsettings.json
             villaUrl = config.GetValue<string>("ServiceUrls:VillaAPI");
+            _clientFactory = clientFactory;
         }
         public async Task<T> CreateAsync<T>(VillaNumberCreateDto createDto)
         {
@@ -57,7 +59,7 @@ namespace MagicVilla_Web.Services
             {
                 ApiType = StaticDetails.ApiType.PUT,
                 Data = updateDto,
-                Url = villaUrl + "/api/villaNumber/" + updateDto.VillaNo
+                Url = villaUrl + "/api/villaNumber/" + updateDto.VillaNo 
             });
         }
     }

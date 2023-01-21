@@ -1,4 +1,4 @@
-﻿namespace MagicVilla_V.Models.Dto
+﻿namespace MagicVilla_Web.Models.Dto
 {
     public class LoginRequestDto
     {
