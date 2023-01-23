@@ -4,8 +4,10 @@ using MagicVilla_Web.Models;
 using MagicVilla_Web.Models.Dto;
 using MagicVilla_Web.Services.IServices;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace MagicVilla_Web.Controllers
 {
@@ -36,6 +38,14 @@ namespace MagicVilla_Web.Controllers
             if (response != null && response.IsSuccess)
             {
                 LoginResponseDto responseObj = JsonConvert.DeserializeObject<LoginResponseDto>(Convert.ToString(response.Result));
+
+                //so the httpcontext knows that user is logged in - actually signing in a user
+                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+                identity.AddClaim(new Claim(ClaimTypes.Name, responseObj.User.UserName));
+                identity.AddClaim(new Claim(ClaimTypes.Role, responseObj.User.Role));
+                var principal = new ClaimsPrincipal(identity);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                //now user is singed together with claims
 
                 //we retrieve token from responseObj and store it in session
                 HttpContext.Session.SetString(StaticDetails.SessionToken, responseObj.Token);
