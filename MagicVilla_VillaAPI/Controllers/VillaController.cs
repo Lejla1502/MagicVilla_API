@@ -70,7 +70,6 @@ namespace MagicVilla_VillaAPI.Controllers
 
         //explicitely saying that id is integer, but we can omit that and just leave id
         [HttpGet("{id:int}", Name="GetVilla")]
-        [Authorize(Roles = "admin")]
         //to document all of the possible resonse types/codes
         ///[ProducesResponseType(typeof(int), 200)] //-OK
         //[ProducesResponseType(typeof(int), 404)] //-NOTFOUND
@@ -153,6 +152,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType (StatusCodes.Status404NotFound)]
+        [Authorize(Roles = "admin")]
         //we use IActionResult because we don't want to define type nor return any data
         public async Task<ActionResult<APIResponse>> DeleteVilla(int id) 
         {
@@ -189,6 +189,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles ="admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<APIResponse>> UpdateVilla(int id,[FromBody] VillaUpdateDto updateDto)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MagicVilla_Utility;
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Models.Dto;
 using MagicVilla_Web.Services.IServices;
@@ -23,7 +24,7 @@ namespace MagicVilla_Web.Controllers
         {
             List<VillaDto> list = new();
 
-            var response = await _villaService.GetAllAsync<APIResponse>();
+            var response = await _villaService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(StaticDetails.SessionToken));
             if (response != null && response.IsSuccess) {
                 //we get all datafrom response in response.Result, we deserialize it, convert it to 
                 //List of VillaDto type and assign it to our list
@@ -50,14 +51,14 @@ namespace MagicVilla_Web.Controllers
 
             return View(dto);
         }
-
+        [Authorize(Roles ="admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateVilla(VillaCreateDto dto)
         {
             if (ModelState.IsValid)
             {
-                var response = await _villaService.CreateAsync<APIResponse>(dto);
+                var response = await _villaService.CreateAsync<APIResponse>(dto, HttpContext.Session.GetString(StaticDetails.SessionToken));
 
                 if (response != null && response.IsSuccess)
                 {
@@ -71,10 +72,10 @@ namespace MagicVilla_Web.Controllers
             return View(dto);
         }
 
-
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateVilla(int id)
         {
-            var resp = await _villaService.GetAsync<APIResponse>(id);
+            var resp = await _villaService.GetAsync<APIResponse>(id, HttpContext.Session.GetString(StaticDetails.SessionToken));
 
             if(resp != null && resp.IsSuccess)
             {
@@ -85,6 +86,7 @@ namespace MagicVilla_Web.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateVilla(VillaUpdateDto dto)
@@ -93,7 +95,7 @@ namespace MagicVilla_Web.Controllers
             {
                 TempData["success"] = "Villa updated successfully!";
 
-                var response = await _villaService.UpdateAsync<APIResponse>(dto);
+                var response = await _villaService.UpdateAsync<APIResponse>(dto, HttpContext.Session.GetString(StaticDetails.SessionToken));
 
                 if (response != null && response.IsSuccess)
                 {
@@ -105,10 +107,14 @@ namespace MagicVilla_Web.Controllers
 
             return View(dto);
         }
-       
+
+      
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteVilla(int id)
         {
-            var response = await _villaService.DeleteAsync<APIResponse>(id);
+            var response = await _villaService.DeleteAsync<APIResponse>(id, HttpContext.Session.GetString(StaticDetails.SessionToken));
 
             
             if (response !=null && response.IsSuccess)

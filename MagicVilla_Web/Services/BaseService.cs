@@ -4,6 +4,7 @@ using MagicVilla_Web.Services.IServices;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace MagicVilla_Web.Services
@@ -53,6 +54,14 @@ namespace MagicVilla_Web.Services
                 }
 
                 HttpResponseMessage apiResponse = null;
+
+                //checking if token is not null - allows us to authorize apis properly
+                if(!String.IsNullOrEmpty(apiRequest.Token))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.Token);
+                }
+
+
                 apiResponse = await client.SendAsync(requestMessage);
 
                 //when we receive API response, we need to extract API content from there
