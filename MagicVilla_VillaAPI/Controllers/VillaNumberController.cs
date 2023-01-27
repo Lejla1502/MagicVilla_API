@@ -15,6 +15,7 @@ namespace MagicVilla_VillaAPI.Controllers
 {
     [Route("api/villaNumber")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class VillaNumberController : ControllerBase
     {
         private readonly APIResponse _response;
