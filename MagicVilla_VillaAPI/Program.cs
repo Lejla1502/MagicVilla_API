@@ -46,6 +46,14 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1, 0); //major and minor version
 });
 
+//to tell swagger how to use versions for api
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    //used to format api version as groupname
+    //VVV- is for the verson name
+    options.GroupNameFormat = "'v'VVV";
+});
+
 //configuring authentication for bearer
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
