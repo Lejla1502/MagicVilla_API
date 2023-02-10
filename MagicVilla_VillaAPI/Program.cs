@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,7 @@ builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.DefaultApiVersion = new ApiVersion(1, 0); //major and minor version
+    options.ReportApiVersions = true;   //displays what version of api are available in the response header
 });
 
 //to tell swagger how to use versions for api
@@ -52,6 +54,7 @@ builder.Services.AddVersionedApiExplorer(options =>
     //used to format api version as groupname
     //VVV- is for the verson name
     options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;   //instead of v{version} in the url -> v1 or v2
 });
 
 //configuring authentication for bearer
@@ -123,7 +126,24 @@ builder.Services.AddSwaggerGen(options =>
             },
             new List<string>()
         }
-});
+    });
+    options.SwaggerDoc("v1", new OpenApiInfo        //this will appear at the left upper corner of swagger
+    {
+        Version = "v1.0",
+        Title = "Magic Villa",
+        Description = "API to manage Villa",
+        TermsOfService = new Uri("https://example.com/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "Dotnetmastery",
+            Url = new Uri("https://dotnetmastery.com")
+        },
+        License =  new OpenApiLicense
+        {
+            Name = "Example license",
+            Url = new Uri("https://example.com/license")
+        }
+    });
 });
 
 
@@ -152,7 +172,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Magic_VillaV1"); //default one
+    });
 }
 
 app.UseHttpsRedirection();

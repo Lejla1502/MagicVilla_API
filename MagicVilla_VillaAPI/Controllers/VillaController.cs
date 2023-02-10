@@ -18,8 +18,9 @@ namespace MagicVilla_VillaAPI.Controllers
     //to invoke endpoint we must define route
     //[Route("api/[controller]")] - if we leave it like this, Path udates automatically
     //if we change controller name
-    [Route("api/Villa")] //-but if we leave it like this, even if controller name changes,
+    [Route("api/v{version:apiVersion}/Villa")] //-but if we leave it like this, even if controller name changes,
     //path remains the same, that is api/Villa
+    [ApiVersion("1.0")]
     [ApiController]
     public class VillaController : ControllerBase
     {
