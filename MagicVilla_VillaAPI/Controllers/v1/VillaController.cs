@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace MagicVilla_VillaAPI.Controllers
+namespace MagicVilla_VillaAPI.Controllers.v1
 {
-    
+
     //to invoke endpoint we must define route
     //[Route("api/[controller]")] - if we leave it like this, Path udates automatically
     //if we change controller name
@@ -29,19 +29,19 @@ namespace MagicVilla_VillaAPI.Controllers
         private readonly IVillaRepository _villaDB;
         //private readonly ILogging _customILogger;
         private readonly IMapper _mapper;
-    
+
 
         public VillaController(ILogger<VillaController> logger, IVillaRepository villaDb, IMapper mapper)
         {
-            this._response = new();
-            this._logger = logger;
+            _response = new();
+            _logger = logger;
             _villaDB = villaDb;
             _mapper = mapper;
-           // _customILogger = customLogger;
+            // _customILogger = customLogger;
         }
         //- it will not work without HttpGet
         [HttpGet]
-       
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
@@ -70,7 +70,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         //explicitely saying that id is integer, but we can omit that and just leave id
-        [HttpGet("{id:int}", Name="GetVilla")]
+        [HttpGet("{id:int}", Name = "GetVilla")]
         //to document all of the possible resonse types/codes
         ///[ProducesResponseType(typeof(int), 200)] //-OK
         //[ProducesResponseType(typeof(int), 404)] //-NOTFOUND
@@ -85,7 +85,7 @@ namespace MagicVilla_VillaAPI.Controllers
         {
             try
             {
-                 var villa = await _villaDB.GetAsync(i => i.Id == id);
+                var villa = await _villaDB.GetAsync(i => i.Id == id);
 
                 if (villa == null)
                 {
@@ -97,12 +97,13 @@ namespace MagicVilla_VillaAPI.Controllers
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
-            catch(Exception e){
+            catch (Exception e)
+            {
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { e.ToString() };
             }
             return _response;
-            
+
         }
 
         [HttpPost]
@@ -137,7 +138,7 @@ namespace MagicVilla_VillaAPI.Controllers
                 _response.Result = _mapper.Map<VillaDto>(villa);
                 _response.StatusCode = HttpStatusCode.Created;
 
-                return CreatedAtRoute("GetVilla", new {id=villa.Id}, _response);
+                return CreatedAtRoute("GetVilla", new { id = villa.Id }, _response);
             }
             catch (Exception e)
             {
@@ -152,10 +153,10 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType (StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = "admin")]
         //we use IActionResult because we don't want to define type nor return any data
-        public async Task<ActionResult<APIResponse>> DeleteVilla(int id) 
+        public async Task<ActionResult<APIResponse>> DeleteVilla(int id)
         {
             try
             {
@@ -190,10 +191,10 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<APIResponse>> UpdateVilla(int id,[FromBody] VillaUpdateDto updateDto)
+        public async Task<ActionResult<APIResponse>> UpdateVilla(int id, [FromBody] VillaUpdateDto updateDto)
         {
 
             try
@@ -239,7 +240,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType (StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<APIResponse>> UpdatePartialVilla(int id, JsonPatchDocument<VillaUpdateDto> patchDto)
         {
 
