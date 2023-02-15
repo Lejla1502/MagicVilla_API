@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 
-namespace MagicVilla_VillaAPI.Controllers.v1
+namespace MagicVilla_VillaAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/UsersAuth")]
-    [ApiVersion("1.0")]
+    [ApiVersionNeutral]
     [ApiController]
     public class UsersController : Controller
     {
