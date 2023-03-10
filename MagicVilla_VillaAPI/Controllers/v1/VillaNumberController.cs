@@ -149,7 +149,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
             return _response;
         }
 
-        [HttpDelete("{villaNo:int}", Name = "DeleteVillaNumber")]
+        [HttpDelete("{villaNo:int}")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -196,8 +196,9 @@ namespace MagicVilla_Web.Controllers
             return View(villaNumberUpdateVM);
         }
 
+        [Route("api/v1/villaNumber/DeleteVillaNumber")]
         [Authorize(Roles = "admin")]
-        [HttpPost]
+        [HttpDelete("{id:int}")]
         [ValidateAntiForgeryToken]
 
         public async Task<IActionResult> DeleteVillaNumber(int id)
@@ -215,7 +216,7 @@ namespace MagicVilla_Web.Controllers
             TempData["error"] = "Error encountered!!";
 
 
-            return NotFound();
+            return RedirectToAction(nameof(IndexVillaNumber));
         }
     }
 }

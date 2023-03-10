@@ -41,7 +41,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
         }
         //- it will not work without HttpGet
         [HttpGet]
-
+        [ResponseCache(CacheProfileName = "Default30")] //caching for every 30 seconds
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
@@ -75,6 +75,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
         ///[ProducesResponseType(typeof(int), 200)] //-OK
         //[ProducesResponseType(typeof(int), 404)] //-NOTFOUND
         //[ProducesResponseType(typeof(int), 400)] //-BAD REUEST
+        [ResponseCache(Duration = 30)] //caching for every 30 seconds
 
         //cleaner version
         [ProducesResponseType(StatusCodes.Status200OK)]

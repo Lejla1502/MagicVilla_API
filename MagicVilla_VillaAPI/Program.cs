@@ -34,6 +34,8 @@ builder.Services.AddDbContext<VillaDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSqlConnection"));
 });
 
+builder.Services.AddResponseCaching();
+
 builder.Services.AddScoped<IVillaRepository, VillaRepository>();
 builder.Services.AddScoped<IVillaNumRepository, VillaNumRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -167,6 +169,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddControllers(option =>
 {
+    option.CacheProfiles.Add("Default30",
+        new CacheProfile
+        {
+            Duration = 30
+        });
     //if the application type is not JSON, display error message
    // option.ReturnHttpNotAcceptable = true;
     //if we define XML as return type in postman, it returns 406 - format type not acceptable
