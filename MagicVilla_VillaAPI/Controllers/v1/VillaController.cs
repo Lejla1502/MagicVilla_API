@@ -30,7 +30,6 @@ namespace MagicVilla_VillaAPI.Controllers.v1
         //private readonly ILogging _customILogger;
         private readonly IMapper _mapper;
 
-
         public VillaController(ILogger<VillaController> logger, IVillaRepository villaDb, IMapper mapper)
         {
             _response = new();
@@ -41,16 +40,24 @@ namespace MagicVilla_VillaAPI.Controllers.v1
         }
         //- it will not work without HttpGet
         [HttpGet]
-        [ResponseCache(CacheProfileName = "Default30")] //caching for every 30 seconds
+        //[ResponseCache(CacheProfileName = "Default30")] //caching for every 30 seconds
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public async Task<ActionResult<APIResponse>> GetVillas()
+        public async Task<ActionResult<APIResponse>> GetVillas([FromQuery(Name = "filterOccupancy")] int? occupancy)
         {
-
             try
             {
-                IEnumerable<Villa> villaList = await _villaDB.GetAllAsync();
+                IEnumerable<Villa> villaList;
+                
+                if(occupancy>0)
+                {
+                    villaList = await _villaDB.GetAllAsync(u => u.Occupancy == occupancy);
+                }
+                else
+                {
+                    villaList = await _villaDB.GetAllAsync();
+                }
 
                 _logger.LogInformation("Getting all villas");
                 //_customILogger.Log("Getting all villas", "");
@@ -75,7 +82,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
         ///[ProducesResponseType(typeof(int), 200)] //-OK
         //[ProducesResponseType(typeof(int), 404)] //-NOTFOUND
         //[ProducesResponseType(typeof(int), 400)] //-BAD REUEST
-        [ResponseCache(Duration = 30)] //caching for every 30 seconds
+        //[ResponseCache(Duration = 30)] //caching for every 30 seconds
 
         //cleaner version
         [ProducesResponseType(StatusCodes.Status200OK)]
