@@ -18,7 +18,8 @@ namespace MagicVilla_VillaAPI.Repository
             this.dbSet = _dbContext.Set<T>();   
         }
 
-        public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includeProperties = null)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, 
+            string? includeProperties = null)
         {
             //when we work with IQueryable, it doesn't get executed right away, so we can additionally 
             //build on this query
@@ -29,6 +30,7 @@ namespace MagicVilla_VillaAPI.Repository
 
             if (filter != null)
                 query = query.Where(filter);
+
 
             if(!includeProperties.IsNullOrEmpty())
             {
@@ -44,7 +46,8 @@ namespace MagicVilla_VillaAPI.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, 
+            string? includeProperties = null, int pageSize = 3, int pageNumber = 1)
         {
             //when we work with IQueryable, it doesn't get executed right away, so we can additionally 
             //build on this query
@@ -52,6 +55,19 @@ namespace MagicVilla_VillaAPI.Repository
 
             if (filter != null)
                 query = query.Where(filter);
+
+            //paging
+            if (pageSize > 0)
+            {
+                if (pageSize > 100)
+                {
+                    pageSize = 100;
+                }
+
+                //first run: skip(3*(1-1)).take(3) - returns first three villas
+                //second run: skip(3*(2-1)).take(3) - skips first three, and takes following three
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+            }
 
             if (!includeProperties.IsNullOrEmpty())
             {
