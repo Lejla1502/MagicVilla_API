@@ -16,12 +16,14 @@ namespace MagicVilla_VillaAPI.Repository
         private readonly VillaDbContext _db;
         private string secretKey;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         public UserRepository(VillaDbContext db, IConfiguration configuration,
-            UserManager<ApplicationUser> userManager, IMapper mapper)
+            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             _db = db;
             _userManager = userManager;
+            _roleManager = roleManager;
             _mapper = mapper;
             //accessing secret key from appsettings config
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
@@ -108,12 +110,20 @@ namespace MagicVilla_VillaAPI.Repository
             {
                 //this automatically hashes the password, that is why password string is required
                 var result = await _userManager.CreateAsync(user, registrationRequest.Password);
-                await _userManager.AddToRoleAsync(user, "admin");
+                if(result.Succeeded) 
+                {
+                    if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("admin"));
+                        await _roleManager.CreateAsync(new IdentityRole("customer"));
+                    }
+                    await _userManager.AddToRoleAsync(user, "admin");
 
-                var userToReturn = _db.ApplicationUsers
-                    .FirstOrDefault(u=>u.UserName == registrationRequest.UserName);
+                    var userToReturn = _db.ApplicationUsers
+                        .FirstOrDefault(u => u.UserName == registrationRequest.UserName);
 
-                return _mapper.Map<UserDto>(userToReturn);
+                    return _mapper.Map<UserDto>(userToReturn);
+                }
             }
             catch (Exception ex) 
             {
