@@ -1,17 +1,25 @@
 ﻿using MagicVilla_VillaAPI.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MagicVilla_VillaAPI.Data
 {
-    public class VillaDbContext:DbContext
+    public class VillaDbContext:IdentityDbContext<ApplicationUser>
     {
-        public VillaDbContext(DbContextOptions<VillaDbContext> options) : base(options) { }
+        public VillaDbContext(DbContextOptions<VillaDbContext> options) : base(options) 
+        {
+        }
+        
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }    
         public DbSet<Villa> Villas { get; set; }
         public DbSet<VillaNumber> VillaNumbers { get; set; }    
         public DbSet<LocalUser> LocalUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //we are adding this for Identity to be able to use our custom class ApplicationUser
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Villa>().HasData(
                 new Villa
                 {
@@ -19,7 +27,7 @@ namespace MagicVilla_VillaAPI.Data
                     Name = "Royal Villa",
                     Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                     ImageUrl = "https://dotnetmastery.com/bluevillaimages/villa3.jpg",
-                    Occupancy = 4,
+                    Occupancy = 4, 
                     Rate = 200,
                     Sqft = 550,
                     Amenity = "",

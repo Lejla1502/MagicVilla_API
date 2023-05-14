@@ -74,6 +74,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                 if (villaNo == 0)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
                 VillaNumber vn = await _villaNumDB.GetAsync(v => v.VillaNo == villaNo, includeProperties: "Villa");
@@ -81,6 +82,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                 if (vn == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
                     return NotFound(_response);
                 }
 
