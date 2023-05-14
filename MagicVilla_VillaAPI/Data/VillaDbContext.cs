@@ -13,8 +13,6 @@ namespace MagicVilla_VillaAPI.Data
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }    
         public DbSet<Villa> Villas { get; set; }
         public DbSet<VillaNumber> VillaNumbers { get; set; }    
-        public DbSet<LocalUser> LocalUsers { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //we are adding this for Identity to be able to use our custom class ApplicationUser
